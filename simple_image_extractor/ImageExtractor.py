@@ -1,10 +1,11 @@
-import os, argparse
+import os
+import argparse
+from rembg.bg import remove
 import cv2
-
 
 class ImageExtractor: 
 
-    def __init__(self, video_path):
+    def __init__(self, video_path: str) -> None:
 
         self.video = cv2.VideoCapture(video_path)
         self.video_path = video_path
@@ -17,7 +18,7 @@ class ImageExtractor:
         self.m = int(self.s / 60)
         self.h = int(self.m / 60)
 
-    def extract(self, extract_num, save_path):
+    def extract(self, extract_num: int, save_path: str, remove_bg: bool) -> None:
         
         if int(self.video.get(1)) != 0: self.video.set(1, 0)
 
@@ -28,12 +29,19 @@ class ImageExtractor:
             ret, frame = self.video.read()
             if not ret: break
             if(int(self.video.get(1)) % extract_frame == 0):
-                
+
+                #if remove_bg: frame = remove(frame)
+
                 cv2.imwrite(os.path.join(save_path, f"{count}.jpg"), frame)
+                if remove_bg: 
+                    print(type(frame))
+                    output = remove(frame)
+                    cv2.imwrite(os.path.join(save_path, f"rm_{count}.jpg"), output)
+
                 print('Saved frame :', str(int(self.video.get(1))))
                 count += 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"\nVideo Path : {self.video_path}\n" \
             + f"Total Frame : {self.total_frame}\n" \
             + f"Width :       {self.width}\n" \
@@ -41,15 +49,15 @@ class ImageExtractor:
             + f"Fps :         {self.fps}\n" \
             + f"Length :      {self.h}h {self.m}m {self.s}s\n"
         
-    def release(self):
+    def release(self) -> None:
         self.video.release()
 
-def main(args):
+def main(args: argparse):
     extractor = ImageExtractor(args.video_path)
     print(("="*100) + str(extractor) + ("="*100))
 
     # 추출
-    extractor.extract(args.extract_num, args.save_path)
+    extractor.extract(args.extract_num, args.save_path, args.remove_bg)
     extractor.release()
 
 if __name__ == "__main__":
