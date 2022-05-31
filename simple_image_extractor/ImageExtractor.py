@@ -1,6 +1,6 @@
 import os
 import argparse
-from rembg.bg import remove
+#from rembg.bg import remove
 import cv2
 
 class ImageExtractor: 
