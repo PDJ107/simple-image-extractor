@@ -33,10 +33,6 @@ class ImageExtractor:
                 #if remove_bg: frame = remove(frame)
 
                 cv2.imwrite(os.path.join(save_path, f"{count}.jpg"), frame)
-                if remove_bg: 
-                    print(type(frame))
-                    output = remove(frame)
-                    cv2.imwrite(os.path.join(save_path, f"rm_{count}.jpg"), output)
 
                 print('Saved frame :', str(int(self.video.get(1))))
                 count += 1
