@@ -7,7 +7,7 @@ from PIL import Image
 
 class ImageExtractor: 
 
-    def __init__(self, video_path: str) -> None:
+    def __init__(self, video_path: str = "./video/test.mp4") -> None:
 
         self.video = cv2.VideoCapture(video_path)
         self.video_path = video_path
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if not os.path.exists("./video"): os.makedirs("./video")
-    if not os.path.exists("./result"): os.makedirs("./result")
+    if not os.path.exists("video"): os.makedirs("video")
+    if not os.path.exists("result"): os.makedirs("result")
 
     main(args)
