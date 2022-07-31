@@ -2,6 +2,8 @@ import os
 import argparse
 #from rembg.bg import remove
 import cv2
+from pathlib import Path
+from PIL import Image
 
 class ImageExtractor: 
 
@@ -37,6 +39,17 @@ class ImageExtractor:
                 print('Saved frame :', str(int(self.video.get(1))))
                 count += 1
 
+    def convert_webp(self, save_path: str):
+        for target in os.listdir(save_path):
+            image_path = os.path.join(save_path, target)
+            self.image_to_webp(Path(image_path))
+
+    def image_to_webp(self, image_path: str):
+        result_path = image_path.with_suffix(".webp")
+
+        image = Image.open(image_path)  # Open image
+        image.save(result_path, format="webp")  # Convert image to webp
+
     def __str__(self) -> str:
         return f"\nVideo Path : {self.video_path}\n" \
             + f"Total Frame : {self.total_frame}\n" \
@@ -54,6 +67,7 @@ def main(args: argparse):
 
     # 추출
     extractor.extract(args.extract_num, args.save_path, args.remove_bg)
+    extractor.convert_webp(args.save_path)
     extractor.release()
 
 if __name__ == "__main__":
