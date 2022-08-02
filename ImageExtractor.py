@@ -34,7 +34,7 @@ class ImageExtractor:
         self.m = int(self.s / 60)
         self.h = int(self.m / 60)
 
-    def extract(self, extract_num: int = 10, save_path: str = "./result", remove_bg: bool = False) -> None:
+    def extract(self, extract_num: int = 10, save_path: str = "./result", save_local: bool = True, remove_bg: bool = False) -> None:
         assert self.video != None
 
         if int(self.video.get(1)) != 0: self.video.set(1, 0)
@@ -42,17 +42,22 @@ class ImageExtractor:
         count = 0
         extract_frame = int(self.total_frame / extract_num)
 
+        images = []
+
         while(self.video.isOpened()):
             ret, frame = self.video.read()
             if not ret: break
             if(int(self.video.get(1)) % extract_frame == 0):
 
                 #if remove_bg: frame = remove(frame)
+                images.append(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
 
-                cv2.imwrite(os.path.join(save_path, f"{count}.jpg"), frame)
-
-                print('Saved frame :', str(int(self.video.get(1))))
+                if save_local:
+                    cv2.imwrite(os.path.join(save_path, f"{count}.jpg"), frame)
+                    print('Saved frame :', str(int(self.video.get(1))))
                 count += 1
+
+        return images
 
     def convert_webp(self, save_path: str):
         for target in os.listdir(save_path):

@@ -1,21 +1,10 @@
 from fastapi import FastAPI, UploadFile, status
 from ImageExtractor import ImageExtractor
-from pydantic import BaseSettings
-import boto3
-
-class Settings(BaseSettings):
-    APP_ENV: str = 'dev'
-    AWS_ACCESS_KEY: str
-    AWS_SECRET_KEY: str
-    AWS_REGION: str
-    AWS_QUEUE_NAME: str
-    class Config:
-        env_file = 'config.env'
-
-settings = Settings()
+from S3Uploader import S3Uploader
 
 app = FastAPI()
 extractor = ImageExtractor()
+S3Uploader = S3Uploader()
 
 # sqs = boto3.resource(
 #     'sqs',
@@ -26,13 +15,13 @@ extractor = ImageExtractor()
 #
 # queue = sqs.get_queue_by_name(QueueName=settings.AWS_QUEUE_NAME)
 
-
-
 @app.get("/")
 def root():
     return {"message": "Hello"}
 
 @app.post("/upload/", status_code=status.HTTP_200_OK)
 async def upload_video_file(file: UploadFile):
-
+    extractor.load_video_from_tempfile(file.file)
+    images = extractor.extract(extract_num=10, save_local=False)
+    S3Uploader.upload_images(images)
     return {"user_id": 0, "3d_item_id": 0}
