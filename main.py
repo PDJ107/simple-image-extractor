@@ -23,6 +23,6 @@ def root():
 async def upload_video_file(file: UploadFile):
     extractor.load_video_from_tempfile(file.file)
     images = extractor.extract(extract_num=10, save_local=False)
-    S3Uploader.upload_images(images)
+    s3_endpoint = S3Uploader.upload_images(0, images)
     extractor.release()
-    return {"user_id": 0, "3d_item_id": 0}
+    return {"user_id": 0, "s3_endpoint": s3_endpoint}

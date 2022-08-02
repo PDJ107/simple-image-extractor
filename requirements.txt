@@ -1,9 +1,10 @@
 #rembg==2.0.21
-opencv-python==4.5.5.64
+#opencv-python==4.5.5.64
+opencv-python-headless==4.5.3.56
 fastapi==0.74.0
 uvicorn==0.18.2
-Pillow
-pathlib
-python-dotenv
+Pillow==9.2.0
+pathlib==1.0.1
+python-dotenv==0.20.0
 boto3==1.24.42
-python-multipart
+python-multipart==0.0.5

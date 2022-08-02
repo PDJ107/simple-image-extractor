@@ -1,6 +1,9 @@
+import time
+
 from pydantic import BaseSettings
 import boto3
 import io
+from time import strftime
 
 class Settings(BaseSettings):
     APP_ENV: str = 'dev'
@@ -23,12 +26,17 @@ class S3Uploader:
         )
         self.bucket = self.s3.Bucket(settings.AWS_S3_BUCKET_NAME)
 
-    def upload_images(self, images):
+    def upload_images(self, user_id, images):
+
+        prefix = f"{user_id}/{strftime('%Y%m%d%I%M%S', time.localtime())}"
         for i, image in enumerate(images):
-            image_name = f"{i}.jpg"
+            image_name = f"{prefix}/{i}.jpg"
 
             in_mem_file = io.BytesIO()
             image.convert("RGB").save(in_mem_file, format="jpeg")
             in_mem_file.seek(0)
 
             self.bucket.put_object(Body=in_mem_file, Key=image_name)
+
+        return prefix
+
