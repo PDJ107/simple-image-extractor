@@ -6,3 +6,4 @@ Pillow
 pathlib
 python-dotenv
 boto3==1.24.42
+python-multipart

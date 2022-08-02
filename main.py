@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, status
 from ImageExtractor import ImageExtractor
 from pydantic import BaseSettings
 import boto3
@@ -13,23 +13,26 @@ class Settings(BaseSettings):
         env_file = 'config.env'
 
 settings = Settings()
-sqs = boto3.resource(
-    'sqs',
-    aws_access_key_id=settings.AWS_ACCESS_KEY,
-    aws_secret_access_key=settings.AWS_SECRET_KEY,
-    region_name=settings.AWS_REGION
-)
+
 app = FastAPI()
 extractor = ImageExtractor()
 
-# Create the queue. This returns an SQS.Queue instance
-queue = sqs.get_queue_by_name(QueueName=settings.AWS_QUEUE_NAME)
+# sqs = boto3.resource(
+#     'sqs',
+#     aws_access_key_id=settings.AWS_ACCESS_KEY,
+#     aws_secret_access_key=settings.AWS_SECRET_KEY,
+#     region_name=settings.AWS_REGION
+# )
+#
+# queue = sqs.get_queue_by_name(QueueName=settings.AWS_QUEUE_NAME)
+
+
 
 @app.get("/")
 def root():
-    # You can now access identifiers and attributes
-    print(queue.url)
-    print(queue.attributes.get('DelaySeconds'))
-
     return {"message": "Hello"}
 
+@app.post("/upload/", status_code=status.HTTP_200_OK)
+async def upload_video_file(file: UploadFile):
+
+    return {"user_id": 0, "3d_item_id": 0}
