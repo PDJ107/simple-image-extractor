@@ -4,13 +4,27 @@ import argparse
 import cv2
 from pathlib import Path
 from PIL import Image
+import tempfile
 
 class ImageExtractor: 
 
-    def __init__(self, video_path: str = "./video/test.mp4") -> None:
+    def __init__(self) -> None:
+        self.video = None
+        self.tf = None
 
+    def load_video_from_path(self, video_path: str = "./video/test.mp4"):
         self.video = cv2.VideoCapture(video_path)
-        self.video_path = video_path
+        self.load_video_info()
+
+    def load_video_from_tempfile(self, file):
+        tf = tempfile.NamedTemporaryFile(delete=True)
+        tf.write(file.read())
+        tf.seek(0)
+        self.video = cv2.VideoCapture(tf.name)
+        self.load_video_info()
+        self.tf = tf
+
+    def load_video_info(self):
         self.total_frame = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
         self.width = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -20,8 +34,9 @@ class ImageExtractor:
         self.m = int(self.s / 60)
         self.h = int(self.m / 60)
 
-    def extract(self, extract_num: int, save_path: str, remove_bg: bool) -> None:
-        
+    def extract(self, extract_num: int = 10, save_path: str = "./result", remove_bg: bool = False) -> None:
+        assert self.video != None
+
         if int(self.video.get(1)) != 0: self.video.set(1, 0)
 
         count = 0
@@ -51,6 +66,7 @@ class ImageExtractor:
         image.save(result_path, format="webp")  # Convert image to webp
 
     def __str__(self) -> str:
+        assert self.video != None
         return f"\nVideo Path : {self.video_path}\n" \
             + f"Total Frame : {self.total_frame}\n" \
             + f"Width :       {self.width}\n" \
@@ -60,9 +76,11 @@ class ImageExtractor:
         
     def release(self) -> None:
         self.video.release()
+        if self.tf != None: self.tf.close()
 
 def main(args: argparse):
-    extractor = ImageExtractor(args.video_path)
+    extractor = ImageExtractor()
+    extractor.load_video_from_path(args.video_path)
     print(("="*100) + str(extractor) + ("="*100))
 
     # 추출
