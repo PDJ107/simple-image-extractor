@@ -14,6 +14,7 @@ class ImageExtractor:
 
     def load_video_from_path(self, video_path: str = "./video/test.mp4"):
         self.video = cv2.VideoCapture(video_path)
+
         self.load_video_info()
 
     def load_video_from_tempfile(self, file):
@@ -21,8 +22,9 @@ class ImageExtractor:
         tf.write(file.read())
         tf.seek(0)
         self.video = cv2.VideoCapture(tf.name)
-        self.load_video_info()
         self.tf = tf
+
+        self.load_video_info()
 
     def load_video_info(self):
         self.total_frame = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -82,6 +84,7 @@ class ImageExtractor:
     def release(self) -> None:
         self.video.release()
         if self.tf != None: self.tf.close()
+        self.video = None
 
 def main(args: argparse):
     extractor = ImageExtractor()

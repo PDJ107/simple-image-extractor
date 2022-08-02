@@ -24,4 +24,5 @@ async def upload_video_file(file: UploadFile):
     extractor.load_video_from_tempfile(file.file)
     images = extractor.extract(extract_num=10, save_local=False)
     S3Uploader.upload_images(images)
+    extractor.release()
     return {"user_id": 0, "3d_item_id": 0}
